@@ -1,0 +1,8 @@
+{
+    "name": "xelbot/migrations-auto-notes",
+    "license": "Zlib",
+    "type": "project",
+    "require": {
+        "doctrine/migrations": "^3.7"
+    }
+}
