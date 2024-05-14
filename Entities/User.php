@@ -19,9 +19,9 @@ class User
     #[ORM\Column(type: 'string', length: 96)]
     private $password;
 
-    #[ORM\Column(name: 'password_salt', type: 'string', length: 32)]
-    private $salt;
+    #[ORM\Column(type: 'string', length: 32)]
+    private $passwordSalt;
 
-    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private $createdAt;
 }
