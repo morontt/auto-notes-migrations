@@ -2,9 +2,9 @@
 
 require 'vendor/autoload.php';
 
+use AutoNotes\Lib\Doctrine\PluralUnderscoreNamingStrategy;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\Migrations\Configuration\EntityManager\ExistingEntityManager;
 use Doctrine\Migrations\DependencyFactory;
@@ -19,7 +19,7 @@ $dbConfig = include __DIR__ . '/migrations-db.php';
 
 $ORMConfig = ORMSetup::createConfiguration(true);
 $ORMConfig->setMetadataDriverImpl(new AttributeDriver($paths));
-$ORMConfig->setNamingStrategy(new UnderscoreNamingStrategy());
+$ORMConfig->setNamingStrategy(new PluralUnderscoreNamingStrategy());
 
 $connection = DriverManager::getConnection($dbConfig);
 
