@@ -16,7 +16,7 @@ class User
     #[ORM\Column(type: 'string', length: 32, unique: true)]
     private $username;
 
-    #[ORM\Column(type: 'string', length: 96)]
+    #[ORM\Column(type: 'string', length: 64)]
     private $password;
 
     #[ORM\Column(type: 'string', length: 32)]

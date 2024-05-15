@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\PasswordHasher\Hasher\MessageDigestPasswordHasher;
 
 #[AsCommand(name: 'app:user-create')]
 class UserCreate extends Command
@@ -37,16 +38,20 @@ class UserCreate extends Command
         $username = $input->getArgument('username');
         $password = $input->getArgument('password');
 
+        $encoder = new MessageDigestPasswordHasher('sha384', true, 4600);
+
         $user = new User();
         $user
             ->setUsername($username)
-            ->setPassword($password)
+            ->setPassword($encoder->hash($password, $user->getPasswordSalt()))
         ;
 
         $this->em->persist($user);
         $this->em->flush();
 
-        $output->writeln('Success!');
+        $output->writeln('');
+        $output->writeln(sprintf('<info>Create user: <comment>%s</comment></info>', $username));
+        $output->writeln('');
 
         return Command::SUCCESS;
     }
