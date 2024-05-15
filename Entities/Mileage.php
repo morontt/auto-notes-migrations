@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table]
+#[ORM\UniqueConstraint(columns: ['date', 'distanse', 'car_id'])]
 class Mileage
 {
     #[ORM\Id]
