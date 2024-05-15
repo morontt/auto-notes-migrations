@@ -5,7 +5,7 @@ namespace AutoNotes\Entities;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'users')]
+#[ORM\Table]
 class User
 {
     #[ORM\Id]
