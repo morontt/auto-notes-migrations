@@ -24,4 +24,29 @@ class User
 
     #[ORM\Column(type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private $createdAt;
+
+    public function __construct()
+    {
+        $this->passwordSalt = base64_encode(random_bytes(24));
+        $this->createdAt = new \DateTime();
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getPasswordSalt(): string
+    {
+        return $this->passwordSalt;
+    }
 }
