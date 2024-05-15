@@ -2,34 +2,34 @@
 
 namespace AutoNotes\Entities;
 
+use AutoNotes\Entities\Traits\CostTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table]
 class Fuel
 {
+    use CostTrait;
+
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue]
     private $id;
 
-    #[ORM\Column(type: 'decimal', precision: 8, scale: 2)]
-    private $cost;
-
-    #[ORM\ManyToOne(targetEntity: Currency::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
-    protected $currency;
-
     #[ORM\ManyToOne(targetEntity: FillingStation::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
-    protected $station;
+    private $station;
 
     #[ORM\ManyToOne(targetEntity: Car::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
-    protected $car;
+    private $car;
 
     #[ORM\Column(type: 'date', nullable: false)]
-    protected $date;
+    private $date;
+
+    #[ORM\ManyToOne(targetEntity: Mileage::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    private $mileage;
 
     #[ORM\Column(type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private $createdAt;
