@@ -4,6 +4,7 @@
 require realpath(__DIR__ . '/../vendor') . '/autoload.php';
 
 use AutoNotes\Commands\UserCreate;
+use AutoNotes\Commands\UserUpdate;
 use AutoNotes\Lib\Doctrine\EntityManagerFactory;
 use Symfony\Component\Console\Application;
 
@@ -13,5 +14,6 @@ $dbConfig = include __DIR__ . '/../migrations-db.php';
 $em = EntityManagerFactory::create($dbConfig);
 
 $application->add(new UserCreate($em));
+$application->add(new UserUpdate($em));
 
 $application->run();

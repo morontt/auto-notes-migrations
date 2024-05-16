@@ -49,4 +49,11 @@ class User
     {
         return $this->passwordSalt;
     }
+
+    public function setPasswordSalt(string $salt): self
+    {
+        $this->passwordSalt = $salt;
+
+        return $this;
+    }
 }
