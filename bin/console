@@ -3,8 +3,7 @@
 
 require realpath(__DIR__ . '/../vendor') . '/autoload.php';
 
-use AutoNotes\Commands\UserCreate;
-use AutoNotes\Commands\UserUpdate;
+use AutoNotes\Commands;
 use AutoNotes\Lib\Doctrine\EntityManagerFactory;
 use Symfony\Component\Console\Application;
 
@@ -13,7 +12,8 @@ $application = new Application('AutoNote Migration', '0.9.0');
 $dbConfig = include __DIR__ . '/../migrations-db.php';
 $em = EntityManagerFactory::create($dbConfig);
 
-$application->add(new UserCreate($em));
-$application->add(new UserUpdate($em));
+$application->add(new Commands\UserCreate($em));
+$application->add(new Commands\UserUpdate($em));
+$application->add(new Commands\DbDump($dbConfig));
 
 $application->run();
