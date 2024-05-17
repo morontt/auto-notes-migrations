@@ -31,7 +31,7 @@ class DbDump extends Command
     {
         $dumpPath = $this->getFilename();
         $command = sprintf(
-            'mysqldump -h %s -u %s --password=%s %s | gzip > %s 2>&1',
+            'mysqldump --no-tablespaces -h %s -u %s --password=%s %s | gzip > %s 2>&1',
             $this->dbConfig['host'],
             $this->dbConfig['user'],
             escapeshellarg($this->dbConfig['password']),
