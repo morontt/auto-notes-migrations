@@ -6,6 +6,7 @@ use AutoNotes\Entities\Car;
 use AutoNotes\Entities\Currency;
 use AutoNotes\Entities\FillingStation;
 use AutoNotes\Entities\Fuel;
+use AutoNotes\Entities\Mileage;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -40,6 +41,14 @@ class ImportCSV extends Command
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        //$this->importFuels();
+        $this->importMileages($output);
+
+        return Command::SUCCESS;
+    }
+
+    protected function importFuels(): void
     {
         $fp = fopen(realpath(__DIR__ . '/../dumps') . '/ab_fuel.csv', 'r');
         $fuels = [];
@@ -78,8 +87,77 @@ class ImportCSV extends Command
             $this->em->persist($fuel);
             $this->em->flush();
         }
+    }
 
-        return Command::SUCCESS;
+    protected function importMileages(OutputInterface $output)
+    {
+        $ages = [];
+
+        $ages = array_merge($ages, $this->mileagesFromFile('ab_fuel.csv', 0, 5));
+        $ages = array_merge($ages, $this->mileagesFromFile('ab_rash.csv', 5, 4));
+        $ages = array_merge($ages, $this->mileagesFromFile('ab_work.csv', 0, 3));
+
+        $filtered = [];
+        $usedKeys = [];
+        foreach ($ages as $item) {
+            $key = $item['date']->format('Ymd') . '-' . $item['distanse'];
+            if (!isset($usedKeys[$key])) {
+                $filtered[] = $item;
+                $usedKeys[$key] = true;
+            }
+        }
+
+        usort($filtered, function ($a, $b) {
+            $au = (int)$a['date']->format('Ymd');
+            $bu = (int)$b['date']->format('Ymd');
+
+            if ($au == $bu) {
+                return 0;
+            }
+
+            return $au < $bu ? -1 : 1;
+        });
+
+        $nissan = $this->em->getReference(Car::class, 1);
+        $pajero = $this->em->getReference(Car::class, 2);
+
+        foreach ($filtered as $item) {
+            $car = $pajero;
+            if ($item['distanse'] > 300000) {
+                $car = $nissan;
+            }
+
+            $mileage = new Mileage();
+            $mileage
+                ->setCar($car)
+                ->setDate($item['date'])
+                ->setDistanse($item['distanse'])
+            ;
+
+            $this->em->persist($mileage);
+            $this->em->flush();
+        }
+
+        $output->writeln(sprintf('Imported %d items', count($filtered)));
+    }
+
+    protected function mileagesFromFile(string $filename, int $dateIdx, int $distanseIdx): array
+    {
+        $ages = [];
+        $fp = fopen(realpath(__DIR__ . '/../dumps') . '/' . $filename, 'r');
+        while (($data = fgetcsv($fp)) !== false) {
+            if (!empty($data[$distanseIdx]) && !empty($data[$dateIdx])) {
+                $date = DateTime::createFromFormat('d.m.Y', $data[$dateIdx]);
+
+                $ages[] = [
+                    'date' => $date,
+                    'distanse' => (int)$data[$distanseIdx],
+                ];
+            }
+        }
+        fclose($fp);
+
+        return $ages;
     }
 
     protected function getCurrency(DateTime $date)
