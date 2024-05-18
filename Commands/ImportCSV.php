@@ -8,6 +8,7 @@ use AutoNotes\Entities\Expense;
 use AutoNotes\Entities\FillingStation;
 use AutoNotes\Entities\Fuel;
 use AutoNotes\Entities\Mileage;
+use AutoNotes\Entities\Service;
 use AutoNotes\Entities\User;
 use DateTime;
 use Doctrine\ORM\EntityManager;
@@ -46,7 +47,8 @@ class ImportCSV extends Command
     {
         //$this->importFuels();
         //$this->importMileages($output);
-        $this->importExpenses($output);
+        //$this->importExpenses($output);
+        $this->importServices($output);
 
         return Command::SUCCESS;
     }
@@ -94,9 +96,7 @@ class ImportCSV extends Command
 
     protected function importMileages(OutputInterface $output): void
     {
-        $ages = [];
-
-        $ages = array_merge($ages, $this->mileagesFromFile('ab_fuel.csv', 0, 5));
+        $ages = $this->mileagesFromFile('ab_fuel.csv', 0, 5);
         $ages = array_merge($ages, $this->mileagesFromFile('ab_rash.csv', 5, 4));
         $ages = array_merge($ages, $this->mileagesFromFile('ab_work.csv', 0, 3));
 
@@ -182,6 +182,66 @@ class ImportCSV extends Command
         }
 
         $output->writeln(sprintf('Imported %d items', count($expenses)));
+    }
+
+    protected function importServices(OutputInterface $output): void
+    {
+        $items = [];
+        $fp = fopen(realpath(__DIR__ . '/../dumps') . '/ab_work.csv', 'r');
+        while (($data = fgetcsv($fp)) !== false) {
+            $date = DateTime::createFromFormat('d.m.Y', $data[0]);
+
+            $items[] = [
+                'date' => $date,
+                'cost' => (float)$data[2],
+                'description' => $data[1],
+                'distanse' => (int)$data[3],
+            ];
+        }
+        fclose($fp);
+
+        $items = array_filter($items, function (array $a) {
+            return $a['description'] != 'мойка';
+        });
+
+        $nissan = $this->em->getReference(Car::class, 1);
+        $pajero = $this->em->getReference(Car::class, 2);
+
+        foreach ($items as $item) {
+            $car = $pajero;
+            if ($item['distanse'] > 300000) {
+                $car = $nissan;
+            }
+
+            $service = new Service();
+            $service
+                ->setDate($item['date'])
+                ->setCar($car)
+                ->setDescription($item['description'])
+            ;
+
+            if ($item['cost'] > 0) {
+                $service
+                    ->setCost($item['cost'])
+                    ->setCurrency($this->getCurrency($item['date']))
+                ;
+            }
+
+            if ($item['distanse'] > 0) {
+                $mileage = $this->em->getRepository(Mileage::class)->findOneBy([
+                    'date' => $item['date'],
+                    'distanse' => $item['distanse'],
+                ]);
+                if ($mileage) {
+                    $service->setMileage($mileage);
+                }
+            }
+
+            $this->em->persist($service);
+            $this->em->flush();
+        }
+
+        $output->writeln(sprintf('Imported %d items', count($items)));
     }
 
     protected function mileagesFromFile(string $filename, int $dateIdx, int $distanseIdx): array

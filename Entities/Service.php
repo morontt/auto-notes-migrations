@@ -2,46 +2,49 @@
 
 namespace AutoNotes\Entities;
 
-use AutoNotes\Entities\Traits\CostTrait;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table]
-class Fuel
+class Service
 {
-    use CostTrait;
-
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue]
     private $id;
 
     /**
-     * @var FillingStation
-     */
-    #[ORM\ManyToOne(targetEntity: FillingStation::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
-    private $station;
-
-    /**
      * @var float
      */
-    #[ORM\Column(type: 'decimal', precision: 8, scale: 2)]
-    private $value;
+    #[ORM\Column(type: 'decimal', precision: 8, scale: 2, nullable: true)]
+    private $cost;
 
     /**
-     * @var Car
+     * @var Currency
      */
-    #[ORM\ManyToOne(targetEntity: Car::class)]
+    #[ORM\ManyToOne(targetEntity: Currency::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
-    private $car;
+    private $currency;
+
+    /**
+     * @var string
+     */
+    #[ORM\Column(type: 'string', nullable: false)]
+    private $description;
 
     /**
      * @var DateTime
      */
     #[ORM\Column(type: 'date', nullable: false)]
     private $date;
+
+    /**
+     * @var Car
+     */
+    #[ORM\ManyToOne(targetEntity: Car::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
+    private $car;
 
     /**
      * @var Mileage
@@ -66,38 +69,38 @@ class Fuel
         return $this->id;
     }
 
-    public function getStation(): FillingStation
+    public function getCost(): ?float
     {
-        return $this->station;
+        return $this->cost;
     }
 
-    public function setStation(FillingStation $station): Fuel
+    public function setCost(?float $cost): Service
     {
-        $this->station = $station;
+        $this->cost = $cost;
 
         return $this;
     }
 
-    public function getValue(): float
+    public function getCurrency(): ?Currency
     {
-        return $this->value;
+        return $this->currency;
     }
 
-    public function setValue(float $value): Fuel
+    public function setCurrency(?Currency $currency): Service
     {
-        $this->value = $value;
+        $this->currency = $currency;
 
         return $this;
     }
 
-    public function getCar(): Car
+    public function getDescription(): string
     {
-        return $this->car;
+        return $this->description;
     }
 
-    public function setCar(Car $car): Fuel
+    public function setDescription(string $description): Service
     {
-        $this->car = $car;
+        $this->description = $description;
 
         return $this;
     }
@@ -107,9 +110,21 @@ class Fuel
         return $this->date;
     }
 
-    public function setDate(DateTime $date): Fuel
+    public function setDate(DateTime $date): Service
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getCar(): Car
+    {
+        return $this->car;
+    }
+
+    public function setCar(Car $car): Service
+    {
+        $this->car = $car;
 
         return $this;
     }
@@ -119,7 +134,7 @@ class Fuel
         return $this->mileage;
     }
 
-    public function setMileage(?Mileage $mileage): Fuel
+    public function setMileage(?Mileage $mileage): Service
     {
         $this->mileage = $mileage;
 

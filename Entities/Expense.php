@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Expense
 {
     use CostTrait;
+
     public const TYPE_GARAGE = 1;
     public const TYPE_TOOLS = 2;
     public const TYPE_TAX = 3;
