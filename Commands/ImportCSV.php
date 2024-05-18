@@ -4,9 +4,11 @@ namespace AutoNotes\Commands;
 
 use AutoNotes\Entities\Car;
 use AutoNotes\Entities\Currency;
+use AutoNotes\Entities\Expense;
 use AutoNotes\Entities\FillingStation;
 use AutoNotes\Entities\Fuel;
 use AutoNotes\Entities\Mileage;
+use AutoNotes\Entities\User;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -43,7 +45,8 @@ class ImportCSV extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         //$this->importFuels();
-        $this->importMileages($output);
+        //$this->importMileages($output);
+        $this->importExpenses($output);
 
         return Command::SUCCESS;
     }
@@ -89,7 +92,7 @@ class ImportCSV extends Command
         }
     }
 
-    protected function importMileages(OutputInterface $output)
+    protected function importMileages(OutputInterface $output): void
     {
         $ages = [];
 
@@ -107,16 +110,7 @@ class ImportCSV extends Command
             }
         }
 
-        usort($filtered, function ($a, $b) {
-            $au = (int)$a['date']->format('Ymd');
-            $bu = (int)$b['date']->format('Ymd');
-
-            if ($au == $bu) {
-                return 0;
-            }
-
-            return $au < $bu ? -1 : 1;
-        });
+        usort($filtered, [$this, 'sortByDate']);
 
         $nissan = $this->em->getReference(Car::class, 1);
         $pajero = $this->em->getReference(Car::class, 2);
@@ -141,15 +135,64 @@ class ImportCSV extends Command
         $output->writeln(sprintf('Imported %d items', count($filtered)));
     }
 
+    protected function importExpenses(OutputInterface $output): void
+    {
+        $expenses = array_merge([], $this->expensesFromFile('ab_garage.csv', 0, 2, 1));
+        $expenses = array_map(function (array $a) {
+            $a['type'] = Expense::TYPE_GARAGE;
+
+            return $a;
+        }, $expenses);
+
+        $tools = $this->expensesFromFile('ab_tools.csv', 0, 2, 1);
+        $tools = array_map(function (array $a) {
+            $a['type'] = Expense::TYPE_TOOLS;
+
+            return $a;
+        }, $tools);
+        $expenses = array_merge($expenses, $tools);
+
+        $works = $this->expensesFromFile('ab_work.csv', 0, 2, 1);
+        $works = array_filter($works, function (array $a) {
+            return $a['description'] == 'мойка';
+        });
+        $works = array_map(function (array $a) {
+            $a['type'] = Expense::TYPE_WASHING;
+
+            return $a;
+        }, $works);
+        $expenses = array_merge($expenses, $works);
+
+        usort($expenses, [$this, 'sortByDate']);
+
+        $user = $this->em->getReference(User::class, 1);
+        foreach ($expenses as $item) {
+            $expense = new Expense();
+            $expense
+                ->setDate($item['date'])
+                ->setCost($item['cost'])
+                ->setDescription($item['description'])
+                ->setCurrency($this->getCurrency($item['date']))
+                ->setType($item['type'])
+                ->setUser($user)
+            ;
+
+            $this->em->persist($expense);
+            $this->em->flush();
+        }
+
+        $output->writeln(sprintf('Imported %d items', count($expenses)));
+    }
+
     protected function mileagesFromFile(string $filename, int $dateIdx, int $distanseIdx): array
     {
-        $ages = [];
+        $items = [];
         $fp = fopen(realpath(__DIR__ . '/../dumps') . '/' . $filename, 'r');
         while (($data = fgetcsv($fp)) !== false) {
             if (!empty($data[$distanseIdx]) && !empty($data[$dateIdx])) {
                 $date = DateTime::createFromFormat('d.m.Y', $data[$dateIdx]);
 
-                $ages[] = [
+                $items[] = [
                     'date' => $date,
                     'distanse' => (int)$data[$distanseIdx],
                 ];
@@ -157,7 +200,27 @@ class ImportCSV extends Command
         }
         fclose($fp);
 
-        return $ages;
+        return $items;
+    }
+
+    protected function expensesFromFile(string $filename, int $dateIdx, int $costIdx, int $descriptionIdx): array
+    {
+        $items = [];
+        $fp = fopen(realpath(__DIR__ . '/../dumps') . '/' . $filename, 'r');
+        while (($data = fgetcsv($fp)) !== false) {
+            if (!empty($data[$dateIdx]) && !empty($data[$costIdx])) {
+                $date = DateTime::createFromFormat('d.m.Y', $data[$dateIdx]);
+
+                $items[] = [
+                    'date' => $date,
+                    'cost' => (float)$data[$costIdx],
+                    'description' => $data[$descriptionIdx],
+                ];
+            }
+        }
+        fclose($fp);
+
+        return $items;
     }
 
     protected function getCurrency(DateTime $date)
@@ -224,5 +287,17 @@ class ImportCSV extends Command
         }
 
         return $id;
+    }
+
+    protected function sortByDate(array $a, array $b)
+    {
+        $au = (int)$a['date']->format('Ymd');
+        $bu = (int)$b['date']->format('Ymd');
+
+        if ($au == $bu) {
+            return 0;
+        }
+
+        return $au < $bu ? -1 : 1;
     }
 }

@@ -11,6 +11,14 @@ use Doctrine\ORM\Mapping as ORM;
 class Expense
 {
     use CostTrait;
+    public const TYPE_GARAGE = 1;
+    public const TYPE_TOOLS = 2;
+    public const TYPE_TAX = 3;
+    public const TYPE_INSURANCE = 4;
+    public const TYPE_ROAD = 5;
+    public const TYPE_WASHING = 6;
+    public const TYPE_PARKING = 7;
+    public const TYPE_OTHER = 99;
 
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
