@@ -8,6 +8,8 @@ use AutoNotes\Entities\Expense;
 use AutoNotes\Entities\FillingStation;
 use AutoNotes\Entities\Fuel;
 use AutoNotes\Entities\Mileage;
+use AutoNotes\Entities\Order;
+use AutoNotes\Entities\OrderType;
 use AutoNotes\Entities\Service;
 use AutoNotes\Entities\User;
 use DateTime;
@@ -45,10 +47,12 @@ class ImportCSV extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        //$this->importFuels();
-        //$this->importMileages($output);
-        //$this->importExpenses($output);
+        $this->importFuels();
+        $this->importMileages($output);
+        $this->importExpenses($output);
         $this->importServices($output);
+        $this->importOrderTypes($output);
+        $this->importOrders($output);
 
         return Command::SUCCESS;
     }
@@ -238,6 +242,87 @@ class ImportCSV extends Command
             }
 
             $this->em->persist($service);
+            $this->em->flush();
+        }
+
+        $output->writeln(sprintf('Imported %d items', count($items)));
+    }
+
+    protected function importOrderTypes(OutputInterface $output)
+    {
+        $items = [];
+        $fp = fopen(realpath(__DIR__ . '/../dumps') . '/ab_rash.csv', 'r');
+        while (($data = fgetcsv($fp)) !== false) {
+            if ($data[1]) {
+                $items[] = $data[1];
+            }
+        }
+        fclose($fp);
+
+        $items = array_unique($items);
+
+        foreach ($items as $item) {
+            $type = new OrderType();
+            $type->setName($item);
+
+            $this->em->persist($type);
+            $this->em->flush();
+        }
+
+        $output->writeln(sprintf('Imported %d items', count($items)));
+    }
+
+    protected function importOrders(OutputInterface $output)
+    {
+        $items = [];
+        $fp = fopen(realpath(__DIR__ . '/../dumps') . '/ab_rash.csv', 'r');
+        while (($data = fgetcsv($fp)) !== false) {
+            $items[] = [
+                'date' => DateTime::createFromFormat('d.m.Y', $data[0]),
+                'type' => $data[1],
+                'cost' => (float)$data[2],
+                'description' => $data[3],
+                'distanse' => (int)$data[4],
+                'usedAt' => $data[5] ? DateTime::createFromFormat('d.m.Y', $data[5]) : null,
+                'capacity' => $data[6] ?: null,
+            ];
+        }
+        fclose($fp);
+
+        $user = $this->em->getReference(User::class, 1);
+
+        foreach ($items as $item) {
+            $order = new Order();
+            $order
+                ->setDate($item['date'])
+                ->setDescription($item['description'])
+                ->setUser($user)
+                ->setCapacity($item['capacity'])
+                ->setCost($item['cost'])
+                    ->setCurrency($this->getCurrency($item['date']))
+            ;
+
+            if ($item['type']) {
+                $type = $this->em->getRepository(OrderType::class)->findOneBy(['name' => $item['type']]);
+                if ($type) {
+                    $order->setType($type);
+                }
+            }
+
+            if ($item['distanse'] > 0) {
+                $mileage = $this->em->getRepository(Mileage::class)->findOneBy([
+                    'distanse' => $item['distanse'],
+                ]);
+                if ($mileage) {
+                    $order->setMileage($mileage);
+                }
+            }
+
+            if ($item['usedAt']) {
+                $order->setUsedAt($item['usedAt']);
+            }
+
+            $this->em->persist($order);
             $this->em->flush();
         }
 
