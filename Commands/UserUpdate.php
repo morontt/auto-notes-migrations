@@ -4,6 +4,7 @@ namespace AutoNotes\Commands;
 
 use AutoNotes\Entities\User;
 use Doctrine\ORM\EntityManager;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -48,7 +49,7 @@ class UserUpdate extends Command
 
             try {
                 $salt = base64_encode(random_bytes(24));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $output->writeln(sprintf('<error>Error: %s</error>', $e->getMessage()));
 
                 return Command::FAILURE;

@@ -2,6 +2,7 @@
 
 namespace AutoNotes\Commands;
 
+use DateTime;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -57,7 +58,7 @@ class DbDump extends Command
         return sprintf(
             '%s/dump_%s.sql.gz',
             realpath(__DIR__ . '/../dumps'),
-            (new \DateTime())->format('YmdHi')
+            (new DateTime())->format('YmdHi')
         );
     }
 }

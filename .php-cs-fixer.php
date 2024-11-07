@@ -18,5 +18,6 @@ return (new PhpCsFixer\Config())
                 'parenthesis_brace_block', 'square_brace_block', 'switch', 'throw', 'use']
         ],
         'blank_line_before_statement' => ['statements' => ['return']],
+        'global_namespace_import' => ['import_classes' => true],
     ])
     ->setFinder($finder);

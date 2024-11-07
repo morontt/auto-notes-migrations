@@ -2,6 +2,7 @@
 
 namespace AutoNotes\Entities;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -28,7 +29,7 @@ class User
     public function __construct()
     {
         $this->passwordSalt = base64_encode(random_bytes(24));
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     public function setUsername(string $username): self
