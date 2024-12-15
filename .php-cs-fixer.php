@@ -19,5 +19,11 @@ return (new PhpCsFixer\Config())
         ],
         'blank_line_before_statement' => ['statements' => ['return']],
         'global_namespace_import' => ['import_classes' => true],
+        'no_unused_imports' => true,
+        'ordered_class_elements' => true,
+        'no_empty_phpdoc' => true,
+        'phpdoc_trim' => true,
+        'heredoc_indentation' => true,
+        'array_indentation' => true,
     ])
     ->setFinder($finder);
