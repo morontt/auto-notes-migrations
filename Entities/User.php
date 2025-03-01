@@ -2,6 +2,7 @@
 
 namespace AutoNotes\Entities;
 
+use AutoNotes\Entities\Traits\TimeTrait;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -9,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table]
 class User
 {
+    use TimeTrait;
+
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue]
@@ -22,9 +25,6 @@ class User
 
     #[ORM\Column(type: 'string', length: 32)]
     private $passwordSalt;
-
-    #[ORM\Column(type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private $createdAt;
 
     public function __construct()
     {

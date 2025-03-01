@@ -3,6 +3,7 @@
 namespace AutoNotes\Commands;
 
 use AutoNotes\Entities\User;
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -58,6 +59,7 @@ class UserUpdate extends Command
             $user
                 ->setPasswordSalt($salt)
                 ->setPassword($encoder->hash($password, $salt))
+                ->setUpdatedAt(new DateTime())
             ;
             $this->em->flush();
 
