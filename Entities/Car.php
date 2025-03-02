@@ -16,10 +16,10 @@ class Car
     #[ORM\GeneratedValue]
     private $id;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(type: 'string')]
     private $brandName;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(type: 'string')]
     private $modelName;
 
     #[ORM\Column(name: 'prod_year', type: 'integer', nullable: true)]
