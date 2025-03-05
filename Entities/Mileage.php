@@ -70,6 +70,7 @@ class Mileage
     public function setDistance(int $distance): self
     {
         $this->distance = $distance;
+
         return $this;
     }
 

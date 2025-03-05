@@ -34,7 +34,7 @@ class Fuel
      * @var Car
      */
     #[ORM\ManyToOne(targetEntity: Car::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private $car;
 
     /**
