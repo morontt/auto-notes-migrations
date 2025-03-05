@@ -129,7 +129,7 @@ class ImportCSV extends Command
             $mileage
                 ->setCar($car)
                 ->setDate($item['date'])
-                ->setDistanse($item['distanse'])
+                ->setDistance($item['distanse'])
             ;
 
             $this->em->persist($mileage);

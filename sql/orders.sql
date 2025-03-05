@@ -3,7 +3,7 @@ SELECT
     t.name,
     o.cost,
     o.description,
-    m.distanse,
+    m.distance,
     o.used_at,
     o.capacity
 FROM orders AS o

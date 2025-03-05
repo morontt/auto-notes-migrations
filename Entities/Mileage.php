@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table]
-#[ORM\UniqueConstraint(columns: ['date', 'distanse', 'car_id'])]
+#[ORM\UniqueConstraint(columns: ['date', 'distance', 'car_id'])]
 class Mileage
 {
     #[ORM\Id]
@@ -25,7 +25,7 @@ class Mileage
      * @var int
      */
     #[ORM\Column(type: 'integer')]
-    private $distanse;
+    private $distance;
 
     /**
      * @var Car
@@ -62,15 +62,14 @@ class Mileage
         return $this;
     }
 
-    public function getDistanse(): int
+    public function getDistance(): int
     {
-        return $this->distanse;
+        return $this->distance;
     }
 
-    public function setDistanse(int $distanse): Mileage
+    public function setDistance(int $distance): self
     {
-        $this->distanse = $distanse;
-
+        $this->distance = $distance;
         return $this;
     }
 
@@ -79,7 +78,7 @@ class Mileage
         return $this->car;
     }
 
-    public function setCar(Car $car): Mileage
+    public function setCar(Car $car): self
     {
         $this->car = $car;
 
