@@ -20,15 +20,11 @@ class User
     #[ORM\Column(type: 'string', length: 32, unique: true)]
     private $username;
 
-    #[ORM\Column(type: 'string', length: 64)]
+    #[ORM\Column(type: 'string', length: 60)]
     private $password;
-
-    #[ORM\Column(type: 'string', length: 32)]
-    private $passwordSalt;
 
     public function __construct()
     {
-        $this->passwordSalt = base64_encode(random_bytes(24));
         $this->createdAt = new DateTime();
     }
 
@@ -42,18 +38,6 @@ class User
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    public function getPasswordSalt(): string
-    {
-        return $this->passwordSalt;
-    }
-
-    public function setPasswordSalt(string $salt): self
-    {
-        $this->passwordSalt = $salt;
 
         return $this;
     }

@@ -8,13 +8,20 @@
 
 namespace AutoNotes\Commands\Traits;
 
-use Symfony\Component\PasswordHasher\Hasher\MessageDigestPasswordHasher;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactory;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 
 trait PasswordTrait
 {
     public function passwordHasher(): PasswordHasherInterface
     {
-        return new MessageDigestPasswordHasher('sha384', true, 4600);
+        $factory = new PasswordHasherFactory([
+            'common' => [
+                'algorithm' => 'bcrypt',
+                'cost' => 12,
+            ],
+        ]);
+
+        return $factory->getPasswordHasher('common');
     }
 }

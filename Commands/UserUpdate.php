@@ -5,7 +5,6 @@ namespace AutoNotes\Commands;
 use AutoNotes\Commands\Traits\PasswordTrait;
 use AutoNotes\Entities\User;
 use Doctrine\ORM\EntityManager;
-use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -47,18 +46,7 @@ class UserUpdate extends Command
         if (!$user) {
             $output->writeln(sprintf('<error>Error: user "%s" not found</error>', $username));
         } else {
-            try {
-                $salt = base64_encode(random_bytes(24));
-            } catch (Exception $e) {
-                $output->writeln(sprintf('<error>Error: %s</error>', $e->getMessage()));
-
-                return Command::FAILURE;
-            }
-
-            $user
-                ->setPasswordSalt($salt)
-                ->setPassword($this->passwordHasher()->hash($password, $salt))
-            ;
+            $user->setPassword($this->passwordHasher()->hash($password));
             $this->em->flush();
 
             $output->writeln(sprintf('<info>Update user: <comment>%s</comment></info>', $username));

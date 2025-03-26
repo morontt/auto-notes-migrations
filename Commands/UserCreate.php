@@ -43,7 +43,7 @@ class UserCreate extends Command
         $user = new User();
         $user
             ->setUsername($username)
-            ->setPassword($this->passwordHasher()->hash($password, $user->getPasswordSalt()))
+            ->setPassword($this->passwordHasher()->hash($password))
         ;
 
         $this->em->persist($user);
