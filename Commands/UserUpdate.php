@@ -2,8 +2,8 @@
 
 namespace AutoNotes\Commands;
 
+use AutoNotes\Commands\Traits\PasswordTrait;
 use AutoNotes\Entities\User;
-use DateTime;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -11,11 +11,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\PasswordHasher\Hasher\MessageDigestPasswordHasher;
 
 #[AsCommand(name: 'app:user-update')]
 class UserUpdate extends Command
 {
+    use PasswordTrait;
+
     private EntityManager $em;
 
     public function __construct(EntityManager $em)
@@ -46,8 +47,6 @@ class UserUpdate extends Command
         if (!$user) {
             $output->writeln(sprintf('<error>Error: user "%s" not found</error>', $username));
         } else {
-            $encoder = new MessageDigestPasswordHasher('sha384', true, 4600);
-
             try {
                 $salt = base64_encode(random_bytes(24));
             } catch (Exception $e) {
@@ -58,8 +57,7 @@ class UserUpdate extends Command
 
             $user
                 ->setPasswordSalt($salt)
-                ->setPassword($encoder->hash($password, $salt))
-                ->setUpdatedAt(new DateTime())
+                ->setPassword($this->passwordHasher()->hash($password, $salt))
             ;
             $this->em->flush();
 

@@ -2,6 +2,7 @@
 
 namespace AutoNotes\Commands;
 
+use AutoNotes\Commands\Traits\PasswordTrait;
 use AutoNotes\Entities\User;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -9,11 +10,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\PasswordHasher\Hasher\MessageDigestPasswordHasher;
 
 #[AsCommand(name: 'app:user-create')]
 class UserCreate extends Command
 {
+    use PasswordTrait;
+
     private EntityManager $em;
 
     public function __construct(EntityManager $em)
@@ -38,12 +40,10 @@ class UserCreate extends Command
         $username = $input->getArgument('username');
         $password = $input->getArgument('password');
 
-        $encoder = new MessageDigestPasswordHasher('sha384', true, 4600);
-
         $user = new User();
         $user
             ->setUsername($username)
-            ->setPassword($encoder->hash($password, $user->getPasswordSalt()))
+            ->setPassword($this->passwordHasher()->hash($password, $user->getPasswordSalt()))
         ;
 
         $this->em->persist($user);
