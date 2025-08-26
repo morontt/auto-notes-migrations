@@ -31,10 +31,10 @@ class Fuel
     private $value;
 
     /**
-     * @var Car
+     * @var Car|null
      */
     #[ORM\ManyToOne(targetEntity: Car::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
     private $car;
 
     /**
@@ -49,6 +49,13 @@ class Fuel
     #[ORM\ManyToOne(targetEntity: Mileage::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private $mileage;
+
+    /**
+     * @var FuelType
+     */
+    #[ORM\ManyToOne(targetEntity: FuelType::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
+    private $type;
 
     /**
      * @var DateTime
@@ -71,7 +78,7 @@ class Fuel
         return $this->station;
     }
 
-    public function setStation(FillingStation $station): Fuel
+    public function setStation(FillingStation $station): self
     {
         $this->station = $station;
 
@@ -83,19 +90,19 @@ class Fuel
         return $this->value;
     }
 
-    public function setValue(float $value): Fuel
+    public function setValue(float $value): self
     {
         $this->value = $value;
 
         return $this;
     }
 
-    public function getCar(): Car
+    public function getCar(): ?Car
     {
         return $this->car;
     }
 
-    public function setCar(Car $car): Fuel
+    public function setCar(?Car $car): self
     {
         $this->car = $car;
 
@@ -107,7 +114,7 @@ class Fuel
         return $this->date;
     }
 
-    public function setDate(DateTime $date): Fuel
+    public function setDate(DateTime $date): self
     {
         $this->date = $date;
 
@@ -119,7 +126,7 @@ class Fuel
         return $this->mileage;
     }
 
-    public function setMileage(?Mileage $mileage): Fuel
+    public function setMileage(?Mileage $mileage): self
     {
         $this->mileage = $mileage;
 
@@ -129,5 +136,17 @@ class Fuel
     public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
+    }
+
+    public function getType(): FuelType
+    {
+        return $this->type;
+    }
+
+    public function setType(FuelType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
     }
 }
