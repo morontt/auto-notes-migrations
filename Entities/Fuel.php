@@ -58,6 +58,13 @@ class Fuel
     private $type;
 
     /**
+     * @var User
+     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
+    private $user;
+
+    /**
      * @var DateTime
      */
     #[ORM\Column(type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
@@ -146,6 +153,18 @@ class Fuel
     public function setType(FuelType $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
