@@ -33,4 +33,8 @@ class UserSettings
     #[ORM\ManyToOne(targetEntity: Currency::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
     private $defaultCurrency;
+
+    #[ORM\ManyToOne(targetEntity: FuelType::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
+    private $defaultFuelType;
 }
