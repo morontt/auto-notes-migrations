@@ -3,6 +3,7 @@
 namespace AutoNotes\Entities;
 
 use AutoNotes\Entities\Traits\CostTrait;
+use AutoNotes\Entities\Traits\TimeTrait;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Fuel
 {
     use CostTrait;
+    use TimeTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
@@ -63,12 +65,6 @@ class Fuel
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private $user;
-
-    /**
-     * @var DateTime
-     */
-    #[ORM\Column(type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private $createdAt;
 
     public function __construct()
     {
@@ -138,11 +134,6 @@ class Fuel
         $this->mileage = $mileage;
 
         return $this;
-    }
-
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
     }
 
     public function getType(): FuelType

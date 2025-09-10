@@ -3,6 +3,7 @@
 namespace AutoNotes\Entities;
 
 use AutoNotes\Entities\Traits\CostTrait;
+use AutoNotes\Entities\Traits\TimeTrait;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Expense
 {
     use CostTrait;
+    use TimeTrait;
 
     public const TYPE_GARAGE = 1;
     public const TYPE_TOOLS = 2;
@@ -51,12 +53,6 @@ class Expense
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private $user;
 
-    /**
-     * @var DateTime
-     */
-    #[ORM\Column(type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private $createdAt;
-
     public function __construct()
     {
         $this->createdAt = new DateTime();
@@ -72,7 +68,7 @@ class Expense
         return $this->type;
     }
 
-    public function setType(int $type): Expense
+    public function setType(int $type): self
     {
         $this->type = $type;
 
@@ -84,7 +80,7 @@ class Expense
         return $this->description;
     }
 
-    public function setDescription(string $description): Expense
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -96,7 +92,7 @@ class Expense
         return $this->date;
     }
 
-    public function setDate(DateTime $date): Expense
+    public function setDate(DateTime $date): self
     {
         $this->date = $date;
 
@@ -108,15 +104,10 @@ class Expense
         return $this->user;
     }
 
-    public function setUser(User $user): Expense
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
         return $this;
-    }
-
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
     }
 }

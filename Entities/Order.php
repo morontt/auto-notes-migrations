@@ -3,6 +3,7 @@
 namespace AutoNotes\Entities;
 
 use AutoNotes\Entities\Traits\CostTrait;
+use AutoNotes\Entities\Traits\TimeTrait;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Order
 {
     use CostTrait;
+    use TimeTrait;
 
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
@@ -62,12 +64,6 @@ class Order
     #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
     private $type;
 
-    /**
-     * @var DateTime
-     */
-    #[ORM\Column(type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private $createdAt;
-
     public function __construct()
     {
         $this->createdAt = new DateTime();
@@ -83,7 +79,7 @@ class Order
         return $this->description;
     }
 
-    public function setDescription(string $description): Order
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -95,7 +91,7 @@ class Order
         return $this->capacity;
     }
 
-    public function setCapacity(?string $capacity): Order
+    public function setCapacity(?string $capacity): self
     {
         $this->capacity = $capacity;
 
@@ -107,7 +103,7 @@ class Order
         return $this->date;
     }
 
-    public function setDate(DateTime $date): Order
+    public function setDate(DateTime $date): self
     {
         $this->date = $date;
 
@@ -119,7 +115,7 @@ class Order
         return $this->user;
     }
 
-    public function setUser(User $user): Order
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
@@ -131,7 +127,7 @@ class Order
         return $this->usedAt;
     }
 
-    public function setUsedAt(?DateTime $usedAt): Order
+    public function setUsedAt(?DateTime $usedAt): self
     {
         $this->usedAt = $usedAt;
 
@@ -143,7 +139,7 @@ class Order
         return $this->mileage;
     }
 
-    public function setMileage(?Mileage $mileage): Order
+    public function setMileage(?Mileage $mileage): self
     {
         $this->mileage = $mileage;
 
@@ -155,15 +151,10 @@ class Order
         return $this->type;
     }
 
-    public function setType(?OrderType $type): Order
+    public function setType(?OrderType $type): self
     {
         $this->type = $type;
 
         return $this;
-    }
-
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
     }
 }
