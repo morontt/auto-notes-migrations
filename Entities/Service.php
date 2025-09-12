@@ -53,6 +53,14 @@ class Service
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private $mileage;
 
+    #[ORM\ManyToMany(targetEntity: Order::class)]
+    #[ORM\JoinTable(
+        name: 'relation_services_orders',
+        joinColumns: [new ORM\JoinColumn(name: 'service_id', nullable: false, onDelete: 'CASCADE')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'order_id', nullable: false, onDelete: 'CASCADE')]
+    )]
+    private $orders;
+
     /**
      * @var DateTime
      */

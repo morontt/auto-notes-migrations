@@ -64,6 +64,13 @@ class Order
     #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
     private $type;
 
+    /**
+     * @var Car|null
+     */
+    #[ORM\ManyToOne(targetEntity: Car::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
+    private $car;
+
     public function __construct()
     {
         $this->createdAt = new DateTime();
@@ -154,6 +161,18 @@ class Order
     public function setType(?OrderType $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getCar(): ?Car
+    {
+        return $this->car;
+    }
+
+    public function setCar(?Car $car): self
+    {
+        $this->car = $car;
 
         return $this;
     }

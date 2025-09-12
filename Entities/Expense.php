@@ -53,6 +53,13 @@ class Expense
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private $user;
 
+    /**
+     * @var Car|null
+     */
+    #[ORM\ManyToOne(targetEntity: Car::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
+    private $car;
+
     public function __construct()
     {
         $this->createdAt = new DateTime();
@@ -107,6 +114,18 @@ class Expense
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCar(): ?Car
+    {
+        return $this->car;
+    }
+
+    public function setCar(?Car $car): self
+    {
+        $this->car = $car;
 
         return $this;
     }
