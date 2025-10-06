@@ -2,3 +2,4 @@ vendor/
 migrations-db.php
 .php-cs-fixer.cache
 /bin/php-cs-fixer
+dump.sql
