@@ -24,7 +24,7 @@ class Mileage
     /**
      * @var int
      */
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'integer', options:['unsigned' => true])]
     private $distance;
 
     /**
