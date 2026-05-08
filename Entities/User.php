@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * User: morontt
+ * Date: 14.05.2024
+ * Time: 20:02
+ */
+
 namespace AutoNotes\Entities;
 
 use AutoNotes\Entities\Traits\TimeTrait;

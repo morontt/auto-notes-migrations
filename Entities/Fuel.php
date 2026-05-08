@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * User: morontt
+ * Date: 15.05.2024
+ * Time: 13:13
+ */
+
 namespace AutoNotes\Entities;
 
 use AutoNotes\Entities\Traits\CostTrait;

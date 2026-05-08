@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * User: morontt
+ * Date: 18.05.2024
+ * Time: 13:44
+ */
+
 namespace AutoNotes\Entities;
 
 use DateTime;
